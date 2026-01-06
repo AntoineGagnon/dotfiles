@@ -97,6 +97,7 @@ plugins=(
   iterm2
   sublime
   thefuck
+  you-should-use
   zsh-syntax-highlighting
   zsh-autosuggestions 
   )
