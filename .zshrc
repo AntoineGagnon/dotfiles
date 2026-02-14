@@ -7,9 +7,9 @@ fi
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
-export PATH=$PATH:/Users/antoinegagnon/Library/Android/sdk/platform-tools:/Users/antoinegagnon/go/bin:/Users/antoinegagnon/Library/Android/sdk/emulator:/Users/antoinegagnon/Library/Android/sdk/:/Users/antoinegagnon/Library/Android/sdk/cmdline-tools/latest/bin
+export PATH=$PATH:~/Library/Android/sdk/platform-tools:~/go/bin:~/Library/Android/sdk/emulator:~/Library/Android/sdk/:~/Library/Android/sdk/cmdline-tools/latest/bin
 
-export ANDROID_HOME="/Users/antoinegagnon/Library/Android/sdk"
+export ANDROID_HOME="~/Library/Android/sdk"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -120,7 +120,7 @@ zstyle ':omz:plugins:alias-finder' cheaper yes # disabled by default
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
-  export EDITOR='subl'
+  export EDITOR='nvim'
 fi
 
 # Compilation flags
@@ -142,6 +142,7 @@ alias podi="bundle exec pod install"
 alias cleanup="git checkout .  > /dev/null && git clean -df > /dev/null && echo 'Done !'"
 alias pj='f() { cd `pj-go $1` };f'
 alias statusCurl="curl -o /dev/null -s -w \"%{http_code}\""
+alias todo="nvim ~/todo/"
 
 # Android aliases
 alias adbPackages="adb shell pm list packages"
@@ -155,35 +156,62 @@ alias resetProxy="bash /Applications/Proxyman.app/Contents/Frameworks/ProxymanCo
 # Swift aliases
 alias sft="git diff --name-only --diff-filter=d | grep '\.swift$' | xargs swiftformat"
 
-# Bell Media aliases
-alias news="cd /Users/antoinegagnon/Code/bellmedia-news-evo-mobile"
 
-alias conf="cd /Users/antoinegagnon/Code/bellmedia-sports-mobile/submodules/bellmedia-sports-mobile-config"
-alias sports="cd /Users/antoinegagnon/Code/bellmedia-sports-mobile"
-alias com="cd /Users/antoinegagnon/Code/bellmedia-news-evo-mobile/submodules/bellmedia-common-mobile"
+# Random alias
+alias wn="afplay ~/Documents/white-noise.mp3"
 
+alias lq="cd ~/Code/lqsignature/"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-eval "$(/Users/antoinegagnon/.local/bin/mise activate zsh)"
+eval "$(~/.local/bin/mise activate zsh)"
 
 # bun completions
-[ -s "/Users/antoinegagnon/.bun/_bun" ] && source "/Users/antoinegagnon/.bun/_bun"
+[ -s "~/.bun/_bun" ] && source "~/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Herd injected PHP 8.4 configuration.
-export HERD_PHP_84_INI_SCAN_DIR="/Users/antoinegagnon/Library/Application Support/Herd/config/php/84/"
+export HERD_PHP_84_INI_SCAN_DIR="~/Library/Application Support/Herd/config/php/84/"
 
 
 # Herd injected PHP binary.
-export PATH="/Users/antoinegagnon/Library/Application Support/Herd/bin/":$PATH
+export PATH="~/Library/Application Support/Herd/bin/":$PATH
 eval "$(gh copilot alias -- zsh)"
 
-export PATH="/Users/antoinegagnon/.config/herd-lite/bin:$PATH"
-export PHP_INI_SCAN_DIR="/Users/antoinegagnon/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
+export PATH="~/.config/herd-lite/bin:$PATH"
+export PHP_INI_SCAN_DIR="~/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
 
 # opencode
-export PATH=/Users/antoinegagnon/.opencode/bin:$PATH
+export PATH=~/.opencode/bin:$PATH
+
+# SSL
+export SSL_CERT_FILE=/Users/gagnoat/Documents/LQACENT50001P.pem
+export NODE_EXTRA_CA_CERTS=/Users/gagnoat/Documents/LQACENT50001P.pem
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/gagnoat/.lmstudio/bin"
+# End of LM Studio CLI section
+
+function setup-certs() {
+  # place to put the combined certs
+  local cert_path="$HOME/.certs/all.pem"
+  local cert_dir=$(dirname "${cert_path}")
+  [[ -d "${cert_dir}" ]] || mkdir -p "${cert_dir}"
+  # grab all the certs
+  security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain > "${cert_path}"
+  security find-certificate -a -p /Library/Keychains/System.keychain >> "${cert_path}"
+  # configure env vars for commonly used tools
+  export GIT_SSL_CAINFO="${cert_path}"
+  export AWS_CA_BUNDLE="${cert_path}"
+  export NODE_EXTRA_CA_CERTS="${cert_path}"
+  # add the certs for npm and yarn
+  # and since we have certs, strict-ssl can be true
+  npm config set -g cafile "${cert_path}"
+  npm config set -g strict-ssl true
+}
+setup-certs
