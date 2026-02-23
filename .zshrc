@@ -179,7 +179,6 @@ export HERD_PHP_84_INI_SCAN_DIR="~/Library/Application Support/Herd/config/php/8
 
 # Herd injected PHP binary.
 export PATH="~/Library/Application Support/Herd/bin/":$PATH
-eval "$(gh copilot alias -- zsh)"
 
 export PATH="~/.config/herd-lite/bin:$PATH"
 export PHP_INI_SCAN_DIR="~/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
