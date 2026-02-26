@@ -55,6 +55,7 @@ brew install woff2
 
 # Install other useful binaries.
 brew install ack
+brew install --cask alt-tab
 brew install gh
 brew install git
 brew install git-lfs
@@ -70,6 +71,7 @@ brew install ripgrep
 brew install rlwrap
 brew install ssh-copy-id
 brew install tree
+brew install yadm
 brew install vbindiff
 brew install zopfli
 
