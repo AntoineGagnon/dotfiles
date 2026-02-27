@@ -66,6 +66,7 @@ brew install lynx
 brew install p7zip
 brew install pigz
 brew install pv
+brew install --cask raycast
 brew install rename
 brew install ripgrep
 brew install rlwrap
