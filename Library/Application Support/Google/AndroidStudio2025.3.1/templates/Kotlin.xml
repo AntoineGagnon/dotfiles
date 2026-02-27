@@ -100,4 +100,110 @@
       <option name="KOTLIN" value="true" />
     </context>
   </template>
+  <template name="le" value="LaunchedEffect($KEY$) {&#10;    $END$&#10;}" description="LaunchedEffect with key" toReformat="true" toShortenFQNames="true">
+    <variable name="KEY" expression="" defaultValue="&quot;Unit&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="collectas" value="collectAsStateWithLifecycle()" description="collectAsState with lifecycle" toReformat="true" toShortenFQNames="true">
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="vmstate" value="private val _uiState = MutableStateFlow($STATE$())&#10;val uiState: StateFlow&lt;$STATE$&gt; = _uiState.asStateFlow()" description="ViewModel state pattern" toReformat="true" toShortenFQNames="true">
+    <variable name="STATE" expression="" defaultValue="&quot;UiState&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN_CLASS" value="true" />
+    </context>
+  </template>
+  <template name="lazyrow" value="LazyRow(&#10;    modifier = Modifier.fillMaxWidth(),&#10;    contentPadding = PaddingValues($DP$.dp),&#10;    horizontalArrangement = Arrangement.spacedBy($DP$.dp)&#10;) {&#10;    items($COUNT$) { $ITEM$ -&gt;&#10;        $END$&#10;    }&#10;}" description="LazyRow with items" toReformat="true" toShortenFQNames="true">
+    <variable name="DP" expression="" defaultValue="&quot;16&quot;" alwaysStopAt="true" />
+    <variable name="COUNT" expression="" defaultValue="&quot;10&quot;" alwaysStopAt="true" />
+    <variable name="ITEM" expression="" defaultValue="&quot;item&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="card" value="Card(&#10;    modifier = Modifier$MOD$,&#10;    onClick = { $CLICK$ }&#10;) {&#10;    $END$&#10;}" description="Material3 Card" toReformat="true" toShortenFQNames="true">
+    <variable name="MOD" expression="" defaultValue="&quot;&quot;" alwaysStopAt="true" />
+    <variable name="CLICK" expression="" defaultValue="&quot;&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="outtxt" value="OutlinedTextField(&#10;    value = $VALUE$,&#10;    onValueChange = { $VALUE$ = it },&#10;    label = { Text(&quot;$LABEL$&quot;) },&#10;    modifier = Modifier$MOD$&#10;)" description="OutlinedTextField" toReformat="true" toShortenFQNames="true">
+    <variable name="VALUE" expression="" defaultValue="&quot;text&quot;" alwaysStopAt="true" />
+    <variable name="LABEL" expression="" defaultValue="&quot;Label&quot;" alwaysStopAt="true" />
+    <variable name="MOD" expression="" defaultValue="&quot;&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="scope" value="val scope = rememberCoroutineScope()" description="rememberCoroutineScope" toReformat="true" toShortenFQNames="true">
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="disp" value="DisposableEffect($KEY$) {&#10;    onDispose {&#10;        $END$&#10;    }&#10;}" description="DisposableEffect cleanup" toReformat="true" toShortenFQNames="true">
+    <variable name="KEY" expression="" defaultValue="&quot;Unit&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="withctx" value="withContext(Dispatchers.$DISP$) {&#10;    $END$&#10;}" description="withContext wrapper" toReformat="true" toShortenFQNames="true">
+    <variable name="DISP" expression="" defaultValue="&quot;IO&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="updat" value="$FLOW$.update { $END$ }" description="StateFlow update pattern" toReformat="true" toShortenFQNames="true">
+    <variable name="FLOW" expression="" defaultValue="&quot;&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="lkey" value="key($ID$) { $END$ }" description="LazyList key" toReformat="true" toShortenFQNames="true">
+    <variable name="ID" expression="" defaultValue="&quot;item.id&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="sealed" value="sealed class $NAME$ {&#10;    data class $SUBCLASS$($PARAMS$) : $NAME$()&#10;    object $INSTANCE$ : $NAME$()&#10;}" description="Sealed class with members" toReformat="true" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="&quot;Result&quot;" alwaysStopAt="true" />
+    <variable name="SUBCLASS" expression="" defaultValue="&quot;Success&quot;" alwaysStopAt="true" />
+    <variable name="PARAMS" expression="" defaultValue="&quot;val data: String&quot;" alwaysStopAt="true" />
+    <variable name="INSTANCE" expression="" defaultValue="&quot;Error&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN_CLASS" value="true" />
+      <option name="KOTLIN_TOPLEVEL" value="true" />
+    </context>
+  </template>
+  <template name="enum" value="enum class $NAME$($PROPS$) {&#10;    $CASE1$,&#10;    $CASE2$&#10;}" description="Enum class with properties" toReformat="true" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="&quot;Direction&quot;" alwaysStopAt="true" />
+    <variable name="PROPS" expression="" defaultValue="&quot;val value: Int&quot;" alwaysStopAt="true" />
+    <variable name="CASE1" expression="" defaultValue="&quot;UP&quot;" alwaysStopAt="true" />
+    <variable name="CASE2" expression="" defaultValue="&quot;DOWN&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN_CLASS" value="true" />
+      <option name="KOTLIN_TOPLEVEL" value="true" />
+    </context>
+  </template>
+  <template name="iconbtn" value="IconButton(onClick = { $CLICK$ }) {&#10;    Icon(&#10;        imageVector = Icons.$TYPE$.$ICON$,&#10;        contentDescription = &quot;$DESC$&quot;&#10;    )&#10;}" description="IconButton with Icon" toReformat="true" toShortenFQNames="true">
+    <variable name="CLICK" expression="" defaultValue="{}" alwaysStopAt="true" />
+    <variable name="TYPE" expression="" defaultValue="&quot;Filled&quot;" alwaysStopAt="true" />
+    <variable name="ICON" expression="" defaultValue="&quot;Add&quot;" alwaysStopAt="true" />
+    <variable name="DESC" expression="" defaultValue="&quot;&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="surf" value="Surface(&#10;    modifier = Modifier$MOD$,&#10;    color = MaterialTheme.colorScheme.$COLOR$,&#10;    shape = RoundedCornerShape($DP$.dp)&#10;) {&#10;    $END$&#10;}" description="Surface with modifier" toReformat="true" toShortenFQNames="true">
+    <variable name="MOD" expression="" defaultValue="&quot;&quot;" alwaysStopAt="true" />
+    <variable name="COLOR" expression="" defaultValue="&quot;surface&quot;" alwaysStopAt="true" />
+    <variable name="DP" expression="" defaultValue="&quot;8&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
 </templateSet>
