@@ -1,0 +1,103 @@
+<templateSet group="Kotlin">
+  <template name="fun3" value="fun $NAME$($PARAM1$ : $PARAM1TYPE$, $PARAM2$ : $PARAM2TYPE$, $PARAM3$ : $PARAM3TYPE$) : $RETURN$ {&#10;$END$&#10;}" description="Function with three parameters" toReformat="true" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="PARAM1" expression="" defaultValue="&quot;x&quot;" alwaysStopAt="true" />
+    <variable name="PARAM1TYPE" expression="" defaultValue="&quot;Any&quot;" alwaysStopAt="true" />
+    <variable name="PARAM2" expression="" defaultValue="&quot;y&quot;" alwaysStopAt="true" />
+    <variable name="PARAM2TYPE" expression="" defaultValue="&quot;Any&quot;" alwaysStopAt="true" />
+    <variable name="PARAM3" expression="" defaultValue="&quot;z&quot;" alwaysStopAt="true" />
+    <variable name="PARAM3TYPE" expression="" defaultValue="&quot;Any&quot;" alwaysStopAt="true" />
+    <variable name="RETURN" expression="" defaultValue="&quot;Unit&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN_CLASS" value="true" />
+      <option name="KOTLIN_STATEMENT" value="true" />
+      <option name="KOTLIN_TOPLEVEL" value="true" />
+    </context>
+  </template>
+  <template name="sfl" value="private val _$VAR$ = MutableStateFlow&lt;$TYPE$&gt;($DEFAULT$)&#10;val $VAR$: StateFlow&lt;$TYPE$&gt; get() = _$VAR$.asStateFlow()" description="Private MutableStateFlow with public StateFlow" toReformat="true" toShortenFQNames="true">
+    <variable name="VAR" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="TYPE" expression="" defaultValue="&quot;UiState&quot;" alwaysStopAt="true" />
+    <variable name="DEFAULT" expression="" defaultValue="&quot;UiState()&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN_CLASS" value="true" />
+    </context>
+  </template>
+  <template name="remstate" value="var $VAR$ by remember { mutableStateOf($DEFAULT$) }" description="remember mutableStateOf delegate" toReformat="true" toShortenFQNames="true">
+    <variable name="VAR" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="DEFAULT" expression="" defaultValue="&quot;false&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="remsave" value="var $VAR$ by rememberSaveable { mutableStateOf($DEFAULT$) }" description="rememberSaveable mutableStateOf for surviving config changes" toReformat="true" toShortenFQNames="true">
+    <variable name="VAR" expression="" defaultValue="" alwaysStopAt="true" />
+    <variable name="DEFAULT" expression="" defaultValue="&quot;false&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="scaffold" value="Scaffold(&#10;    topBar = { TopAppBar(title = { Text(&quot;$TITLE$&quot;) }) }&#10;) { paddingValues -&gt;&#10;    $CONTENT$&#10;}" description="Scaffold with TopAppBar" toReformat="true" toShortenFQNames="true">
+    <variable name="TITLE" expression="" defaultValue="&quot;Screen&quot;" alwaysStopAt="true" />
+    <variable name="CONTENT" expression="" defaultValue="&quot;Column&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="lazycol" value="LazyColumn(&#10;    modifier = Modifier.fillMaxSize(),&#10;    contentPadding = PaddingValues($DP$.dp)&#10;) {&#10;    items($COUNT$) { $ITEM$ -&gt;&#10;        $END$&#10;    }&#10;}" description="LazyColumn with items" toReformat="true" toShortenFQNames="true">
+    <variable name="DP" expression="" defaultValue="&quot;16&quot;" alwaysStopAt="true" />
+    <variable name="COUNT" expression="" defaultValue="&quot;10&quot;" alwaysStopAt="true" />
+    <variable name="ITEM" expression="" defaultValue="&quot;item&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="col" value="Column(&#10;    modifier = Modifier.fillMaxSize(),&#10;    verticalArrangement = Arrangement.spacedBy($DP$.dp)&#10;) {&#10;    $END$&#10;}" description="Column with modifier and spacing" toReformat="true" toShortenFQNames="true">
+    <variable name="DP" expression="" defaultValue="&quot;16&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="row" value="Row(&#10;    modifier = Modifier.fillMaxWidth(),&#10;    horizontalArrangement = Arrangement.spacedBy($DP$.dp)&#10;) {&#10;    $END$&#10;}" description="Row with modifier and spacing" toReformat="true" toShortenFQNames="true">
+    <variable name="DP" expression="" defaultValue="&quot;8&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="box" value="Box(&#10;    modifier = Modifier.fillMaxSize(),&#10;    contentAlignment = Alignment.Center&#10;) {&#10;    $END$&#10;}" description="Box with modifier and center alignment" toReformat="true" toShortenFQNames="true">
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="btn" value="Button(onClick = { $CLICK$ }) {&#10;    Text(&quot;$TEXT$&quot;)&#10;}" description="Material3 Button" toReformat="true" toShortenFQNames="true">
+    <variable name="CLICK" expression="" defaultValue="{}" alwaysStopAt="true" />
+    <variable name="TEXT" expression="" defaultValue="&quot;Click me&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="txtbtn" value="TextButton(onClick = { $CLICK$ }) {&#10;    Text(&quot;$TEXT$&quot;)&#10;}" description="Material3 TextButton" toReformat="true" toShortenFQNames="true">
+    <variable name="CLICK" expression="" defaultValue="{}" alwaysStopAt="true" />
+    <variable name="TEXT" expression="" defaultValue="&quot;Click me&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="ktest" value="@Test&#10;fun `$NAME$`() {&#10;    $END$&#10;}" description="Kotlin test function with backticks" toReformat="true" toShortenFQNames="true">
+    <variable name="NAME" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN_CLASS" value="true" />
+    </context>
+  </template>
+  <template name="sbh" value="horizontalArrangement = Arrangement.spacedBy($DP$.dp)" description="SpacedBy horizontal" toReformat="true" toShortenFQNames="true">
+    <variable name="DP" expression="" defaultValue="&quot;8&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+  <template name="sbv" value="verticalArrangement = Arrangement.spacedBy($DP$.dp)" description="SpacedBy vertical" toReformat="true" toShortenFQNames="true">
+    <variable name="DP" expression="" defaultValue="&quot;8&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="KOTLIN" value="true" />
+    </context>
+  </template>
+</templateSet>
