@@ -119,8 +119,7 @@ fi
 step "Step 3/11 — Homebrew packages"
 
 if ask_yn "Skip 'brew upgrade'? (faster, packages may be outdated)"; then
-  info "Patching brew.sh to skip upgrade..."
-  sed 's/^brew upgrade$/# brew upgrade (skipped)/' "$HOME/brew.sh" | bash && ok "brew.sh completed" || fail "brew.sh had errors"
+  SKIP_UPGRADE=true bash "$HOME/brew.sh" && ok "brew.sh completed" || fail "brew.sh had errors"
 else
   bash "$HOME/brew.sh" && ok "brew.sh completed" || fail "brew.sh had errors"
 fi

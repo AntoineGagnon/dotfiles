@@ -2,8 +2,12 @@
 
 set -e
 
-brew update
-brew upgrade
+SKIP_UPGRADE="${SKIP_UPGRADE:-false}"
+
+brew update || true
+if [[ "$SKIP_UPGRADE" != "true" ]]; then
+  brew upgrade || true
+fi
 
 BREW_PREFIX=$(brew --prefix)
 
@@ -33,7 +37,7 @@ launchctl load "${HOME}/Library/LaunchAgents/homebrew.autoupdate.plist" 2>/dev/n
 # =============================================================================
 
 brew install coreutils
-ln -sf "${BREW_PREFIX}/bin/gsha256sum" "${BREW_PREFIX}/bin/sha256sum"
+[[ -f "${BREW_PREFIX}/bin/gsha256sum" ]] && ln -sf "${BREW_PREFIX}/bin/gsha256sum" "${BREW_PREFIX}/bin/sha256sum" || true
 
 brew install moreutils
 brew install findutils
