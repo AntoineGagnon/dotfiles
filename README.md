@@ -13,16 +13,17 @@ That's it. The script will guide you through everything.
 ## What it sets up
 
 1. **Homebrew** — package manager
-2. **Dotfiles** — clones this repo via yadm
-3. **Homebrew packages** — all tools, apps and fonts from `brew.sh`
+2. **Dotfiles** — clones this repo via yadm (HTTPS first, then SSH)
+3. **Homebrew packages** — all tools, apps and fonts from `Brewfile`
 4. **Shell** — oh-my-zsh, zsh-autosuggestions, you-should-use, powerlevel10k
-5. **Git** — global name/email, rebase on pull
-6. **SSH** — generates ed25519 key, adds to agent, switches yadm remote to SSH
-7. **Auth** — GitHub (`gh`) and/or GitLab (`glab`)
-8. **macOS defaults** — dock, finder, keyboard settings
-9. **mise** — Go, Python, Node, Java runtimes + golangci-lint
-10. **npm globals** — neovim provider
-11. **Rectangle** — imports window management config
+5. **Aliases & Functions** — split into `.aliases` and `.functions.zsh`
+6. **Git** — global name/email, rebase on pull, global gitignore
+7. **SSH** — generates ed25519 key, adds to agent, switches yadm remote to SSH
+8. **Auth** — GitHub (`gh`) and/or GitLab (`glab`)
+9. **macOS defaults** — dock, finder, keyboard, screenshots, trackpad
+10. **mise** — Go, Python, Node, Java runtimes + golangci-lint
+11. **npm globals** — neovim provider
+12. **Rectangle** — imports window management config
 
 ## Logs
 

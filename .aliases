@@ -1,0 +1,19 @@
+# =============================================================================
+# Aliases
+# =============================================================================
+
+alias st.="st ."
+alias zshconfig="st ~/.zshrc"
+alias gs="git status"
+alias podi="bundle exec pod install"
+alias cleanup="git checkout .  > /dev/null && git clean -df > /dev/null && echo 'Done !'"
+alias pj='f() { cd `pj-go $1` };f'
+alias statusCurl="curl -o /dev/null -s -w \"%{http_code}\""
+alias todo="nvim ~/todo/"
+alias sft="git diff --name-only --diff-filter=d | grep '\.swift$' | xargs swiftformat"
+alias wn="afplay ~/Documents/white-noise.mp3"
+
+# Android aliases
+alias adbPackages="adb shell pm list packages"
+alias adbBack="adb shell input keyevent KEYCODE_BACK"
+alias adbSettings="adb shell am start -a android.settings.SETTINGS"

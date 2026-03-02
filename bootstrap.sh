@@ -302,6 +302,18 @@ info "Global..."
 defaults write NSGlobalDomain AppleShowAllExtensions -bool true
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
+info "Screenshots..."
+mkdir -p "$HOME/Screenshots"
+defaults write com.apple.screencapture location -string "$HOME/Screenshots"
+defaults write com.apple.screencapture type -string "png"
+
+info "Trackpad..."
+defaults write com.apple.trackpad TrackpadThreeFingerDrag -bool true
+defaults write -g com.apple.mouse.tapBehavior -int 1
+
+info "Energy saver..."
+defaults write com.apple睡眠 -int 0
+
 info "Restarting Dock & Finder..."
 killall Dock 2>/dev/null || true
 killall Finder 2>/dev/null || true
