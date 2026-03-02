@@ -75,8 +75,8 @@ fi
 
 brew install mise
 brew install luarocks
-brew tap atlassian/acli
-brew install atlassian/acli/acli
+brew tap atlassian-labs/acli
+brew install acli
 
 # Git tools
 brew install gh
