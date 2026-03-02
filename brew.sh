@@ -2,6 +2,15 @@
 
 set -e
 
+LOG_DIR="${HOME}/.local/share/bootstrap"
+LOG_FILE="${LOG_DIR}/brew-$(date +%Y%m%d-%H%M%S).log"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+echo "[$(date)] brew.sh started"
+
+trap 'echo "[$(date)] ERROR: brew.sh failed at line $LINENO (exit code $?)" | tee -a "$LOG_FILE"' ERR
+
 SKIP_UPGRADE="${SKIP_UPGRADE:-false}"
 
 brew update || true
@@ -178,3 +187,6 @@ brew install --cask font-jetbrains-mono
 # =============================================================================
 
 brew cleanup
+
+echo "[$(date)] brew.sh completed successfully"
+echo "Log saved to: $LOG_FILE"

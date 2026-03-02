@@ -4,6 +4,14 @@ set -e
 
 DOTFILES_REPO="git@github.com:AntoineGagnon/dotfiles.git"
 
+LOG_DIR="${HOME}/.local/share/bootstrap"
+LOG_FILE="${LOG_DIR}/bootstrap-$(date +%Y%m%d-%H%M%S).log"
+mkdir -p "$LOG_DIR"
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+echo "[$(date)] bootstrap.sh started"
+trap 'echo "[$(date)] ERROR: bootstrap.sh failed at line $LINENO (exit code $?)"' ERR
+
 # =============================================================================
 # Colors & helpers
 # =============================================================================
@@ -15,11 +23,11 @@ BLUE='\033[0;34m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
-ok()   { echo -e "  ${GREEN}✓${RESET} $1"; RESULTS+=("${GREEN}✓${RESET} $1"); }
-fail() { echo -e "  ${RED}✗${RESET} $1"; RESULTS+=("${RED}✗${RESET} $1"); }
-info() { echo -e "  ${BLUE}→${RESET} $1"; }
-warn() { echo -e "  ${YELLOW}!${RESET} $1"; }
-step() { echo -e "\n${BOLD}$1${RESET}"; }
+ok()   { echo -e "  ${GREEN}✓${RESET} $1"; RESULTS+=("${GREEN}✓${RESET} $1"); echo "[$(date)] OK: $1"; }
+fail() { echo -e "  ${RED}✗${RESET} $1"; RESULTS+=("${RED}✗${RESET} $1"); echo "[$(date)] FAIL: $1"; }
+info() { echo -e "  ${BLUE}→${RESET} $1"; echo "[$(date)] INFO: $1"; }
+warn() { echo -e "  ${YELLOW}!${RESET} $1"; echo "[$(date)] WARN: $1"; }
+step() { echo -e "\n${BOLD}$1${RESET}"; echo "[$(date)] STEP: $1"; }
 
 ask() {
   local prompt="$1"
@@ -336,4 +344,6 @@ done
 echo ""
 echo -e "  ${GREEN}${BOLD}Bootstrap complete!${RESET}"
 echo -e "  Restart your terminal or run: ${BOLD}exec zsh${RESET}"
+echo -e "  Log saved to: ${BOLD}${LOG_FILE}${RESET}"
 echo ""
+echo "[$(date)] bootstrap.sh completed successfully"
