@@ -55,18 +55,22 @@ echo -e "  Setting up a new Mac. Let's go.\n"
 
 step "Step 1/11 — SSH Key"
 
-if [[ -f "$HOME/.ssh/id_ed25519" ]]; then
+SSH_KEY="$HOME/.ssh/id_ed25519"
+SSH_IS_NEW=false
+
+if [[ -f "$SSH_KEY" ]]; then
   ok "SSH key already exists"
 else
   info "Generating new ed25519 SSH key..."
   ask "Enter your email for the SSH key" ssh_email
-  ssh-keygen -t ed25519 -C "$ssh_email" -f "$HOME/.ssh/id_ed25519" -N "" && ok "SSH key generated" || { fail "SSH key generation failed"; exit 1; }
+  mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+  ssh-keygen -t ed25519 -C "$ssh_email" -f "$SSH_KEY" -N "" && ok "SSH key generated" || { fail "SSH key generation failed"; exit 1; }
+  SSH_IS_NEW=true
 fi
 
-eval "$(ssh-agent -s)" > /dev/null
-ssh-add --apple-use-keychain "$HOME/.ssh/id_ed25519" 2>/dev/null || ssh-add "$HOME/.ssh/id_ed25519" 2>/dev/null
+eval "$(ssh-agent -s)" > /dev/null 2>&1
+ssh-add --apple-use-keychain "$SSH_KEY" 2>/dev/null || ssh-add "$SSH_KEY" 2>/dev/null
 
-mkdir -p "$HOME/.ssh"
 if ! grep -q "ssh.github.com" "$HOME/.ssh/config" 2>/dev/null; then
   cat >> "$HOME/.ssh/config" << 'EOF'
 Host github.com
@@ -77,20 +81,21 @@ EOF
   ok "SSH config written"
 fi
 
-echo ""
-echo -e "  ${BOLD}Your public key:${RESET}"
-echo ""
-cat "$HOME/.ssh/id_ed25519.pub"
-echo ""
-info "Add this key to GitHub → https://github.com/settings/ssh/new"
-open "https://github.com/settings/ssh/new" 2>/dev/null || true
-echo -en "  ${YELLOW}?${RESET} Press Enter once you've added the key to GitHub... "
-read -r
-
 if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
-  ok "GitHub SSH connection verified"
+  ok "GitHub SSH already authorized"
+elif [[ "$SSH_IS_NEW" == true ]]; then
+  echo ""
+  echo -e "  ${BOLD}Your public key:${RESET}"
+  echo ""
+  cat "$SSH_KEY.pub"
+  echo ""
+  info "Add this key to GitHub → https://github.com/settings/ssh/new"
+  open "https://github.com/settings/ssh/new" 2>/dev/null || true
+  echo -en "  ${YELLOW}?${RESET} Press Enter once you've added the key to GitHub... "
+  read -r
+  ssh -T git@github.com 2>&1 | grep -q "successfully authenticated" && ok "GitHub SSH connection verified" || warn "Could not verify GitHub SSH — continuing anyway"
 else
-  warn "Could not verify GitHub SSH — continuing anyway"
+  warn "GitHub SSH not verified — you may need to add your key manually"
 fi
 
 # =============================================================================
@@ -176,13 +181,30 @@ fi
 
 step "Step 6/11 — Git config"
 
-ask "Git full name" git_name
-ask "Git email" git_email
+current_name=$(git config --global user.name 2>/dev/null || true)
+current_email=$(git config --global user.email 2>/dev/null || true)
 
-git config --global user.name "$git_name"
-git config --global user.email "$git_email"
-git config --global pull.rebase true
-ok "Git config set (${git_name} <${git_email}>)"
+if [[ -n "$current_name" && -n "$current_email" ]]; then
+  ok "Git already configured as: ${current_name} <${current_email}>"
+  if ! ask_yn "Change git identity?"; then
+    git config --global pull.rebase true
+    RESULTS+=("${GREEN}✓${RESET} Git config kept (${current_name} <${current_email}>)")
+  else
+    ask "Git full name" git_name
+    ask "Git email" git_email
+    git config --global user.name "$git_name"
+    git config --global user.email "$git_email"
+    git config --global pull.rebase true
+    ok "Git config updated (${git_name} <${git_email}>)"
+  fi
+else
+  ask "Git full name" git_name
+  ask "Git email" git_email
+  git config --global user.name "$git_name"
+  git config --global user.email "$git_email"
+  git config --global pull.rebase true
+  ok "Git config set (${git_name} <${git_email}>)"
+fi
 
 # =============================================================================
 # Step 7: Auth (GitHub / GitLab)
@@ -201,7 +223,11 @@ read -r auth_choice
 case "$auth_choice" in
   1|3)
     if command -v gh &>/dev/null; then
-      gh auth login && ok "GitHub authenticated" || fail "GitHub auth failed"
+      if gh auth status &>/dev/null 2>&1; then
+        ok "GitHub already authenticated ($(gh auth status 2>&1 | grep 'Logged in' | awk '{print $NF}'))"
+      else
+        gh auth login && ok "GitHub authenticated" || fail "GitHub auth failed"
+      fi
     else
       fail "gh not found"
     fi
@@ -211,7 +237,11 @@ esac
 case "$auth_choice" in
   2|3)
     if command -v glab &>/dev/null; then
-      glab auth login && ok "GitLab authenticated" || fail "GitLab auth failed"
+      if glab auth status &>/dev/null 2>&1; then
+        ok "GitLab already authenticated"
+      else
+        glab auth login && ok "GitLab authenticated" || fail "GitLab auth failed"
+      fi
     else
       fail "glab not found"
     fi
