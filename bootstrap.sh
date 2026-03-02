@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-set -e
-
-DOTFILES_REPO="git@github.com:AntoineGagnon/dotfiles.git"
+DOTFILES_REPO_HTTPS="https://github.com/AntoineGagnon/dotfiles.git"
+DOTFILES_REPO_SSH="git@github.com:AntoineGagnon/dotfiles.git"
 
 LOG_DIR="${HOME}/.local/share/bootstrap"
 LOG_FILE="${LOG_DIR}/bootstrap-$(date +%Y%m%d-%H%M%S).log"
@@ -10,7 +9,7 @@ mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "[$(date)] bootstrap.sh started"
-trap 'echo "[$(date)] ERROR: bootstrap.sh failed at line $LINENO (exit code $?)"' ERR
+trap 'echo "[$(date)] ERROR at line $LINENO (exit code $?)"' ERR
 
 # =============================================================================
 # Colors & helpers
@@ -23,11 +22,11 @@ BLUE='\033[0;34m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
-ok()   { echo -e "  ${GREEN}✓${RESET} $1"; RESULTS+=("${GREEN}✓${RESET} $1"); echo "[$(date)] OK: $1"; }
-fail() { echo -e "  ${RED}✗${RESET} $1"; RESULTS+=("${RED}✗${RESET} $1"); echo "[$(date)] FAIL: $1"; }
-info() { echo -e "  ${BLUE}→${RESET} $1"; echo "[$(date)] INFO: $1"; }
-warn() { echo -e "  ${YELLOW}!${RESET} $1"; echo "[$(date)] WARN: $1"; }
-step() { echo -e "\n${BOLD}$1${RESET}"; echo "[$(date)] STEP: $1"; }
+ok()   { echo -e "  ${GREEN}✓${RESET} $1"; RESULTS+=("${GREEN}✓${RESET} $1"); }
+fail() { echo -e "  ${RED}✗${RESET} $1"; RESULTS+=("${RED}✗${RESET} $1"); }
+info() { echo -e "  ${BLUE}→${RESET} $1"; }
+warn() { echo -e "  ${YELLOW}!${RESET} $1"; RESULTS+=("${YELLOW}!${RESET} $1"); }
+step() { echo -e "\n${BOLD}$1${RESET}"; }
 
 ask() {
   local prompt="$1"
@@ -58,102 +57,63 @@ echo -e "${RESET}"
 echo -e "  Setting up a new Mac. Let's go.\n"
 
 # =============================================================================
-# Step 1: SSH
+# Step 1: Homebrew
 # =============================================================================
 
-step "Step 1/11 — SSH Key"
-
-SSH_KEY="$HOME/.ssh/id_ed25519"
-SSH_IS_NEW=false
-
-if [[ -f "$SSH_KEY" ]]; then
-  ok "SSH key already exists"
-else
-  info "Generating new ed25519 SSH key..."
-  ask "Enter your email for the SSH key" ssh_email
-  mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
-  ssh-keygen -t ed25519 -C "$ssh_email" -f "$SSH_KEY" -N "" && ok "SSH key generated" || { fail "SSH key generation failed"; exit 1; }
-  SSH_IS_NEW=true
-fi
-
-eval "$(ssh-agent -s)" > /dev/null 2>&1
-ssh-add --apple-use-keychain "$SSH_KEY" 2>/dev/null || ssh-add "$SSH_KEY" 2>/dev/null
-
-if ! grep -q "ssh.github.com" "$HOME/.ssh/config" 2>/dev/null; then
-  cat >> "$HOME/.ssh/config" << 'EOF'
-Host github.com
-    Hostname ssh.github.com
-    Port 443
-    User git
-EOF
-  ok "SSH config written"
-fi
-
-if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
-  ok "GitHub SSH already authorized"
-elif [[ "$SSH_IS_NEW" == true ]]; then
-  echo ""
-  echo -e "  ${BOLD}Your public key:${RESET}"
-  echo ""
-  cat "$SSH_KEY.pub"
-  echo ""
-  info "Add this key to GitHub → https://github.com/settings/ssh/new"
-  open "https://github.com/settings/ssh/new" 2>/dev/null || true
-  echo -en "  ${YELLOW}?${RESET} Press Enter once you've added the key to GitHub... "
-  read -r
-  ssh -T git@github.com 2>&1 | grep -q "successfully authenticated" && ok "GitHub SSH connection verified" || warn "Could not verify GitHub SSH — continuing anyway"
-else
-  warn "GitHub SSH not verified — you may need to add your key manually"
-fi
-
-# =============================================================================
-# Step 2: Homebrew
-# =============================================================================
-
-step "Step 2/11 — Homebrew"
+step "Step 1/12 — Homebrew"
 
 if ! command -v brew &>/dev/null; then
   info "Installing Homebrew..."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && ok "Homebrew installed" || { fail "Homebrew install failed"; exit 1; }
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" && ok "Homebrew installed" || fail "Homebrew install failed"
   eval "$(/opt/homebrew/bin/brew shellenv)"
 else
   ok "Homebrew already installed"
 fi
 
 # =============================================================================
-# Step 3: brew.sh
+# Step 2: yadm + dotfiles (HTTPS clone — no SSH needed yet)
 # =============================================================================
 
-step "Step 3/11 — Homebrew packages"
+step "Step 2/12 — Dotfiles (yadm)"
 
-if ask_yn "Skip 'brew upgrade'? (faster, packages may be outdated)"; then
-  SKIP_UPGRADE=true bash "$HOME/brew.sh" && ok "brew.sh completed" || fail "brew.sh had errors"
-else
-  bash "$HOME/brew.sh" && ok "brew.sh completed" || fail "brew.sh had errors"
+if ! command -v yadm &>/dev/null; then
+  info "Installing yadm..."
+  brew install yadm && ok "yadm installed" || fail "yadm install failed"
 fi
-
-# =============================================================================
-# Step 4: yadm dotfiles
-# =============================================================================
-
-step "Step 4/11 — Dotfiles (yadm)"
 
 if command -v yadm &>/dev/null; then
   if yadm status &>/dev/null; then
     ok "yadm already initialized"
     yadm pull && ok "Dotfiles pulled" || fail "yadm pull failed"
   else
-    yadm clone "$DOTFILES_REPO" && ok "Dotfiles cloned" || fail "yadm clone failed"
+    info "Cloning dotfiles via HTTPS..."
+    yadm clone "$DOTFILES_REPO_HTTPS" && ok "Dotfiles cloned" || fail "yadm clone failed"
   fi
 else
-  fail "yadm not found — was brew.sh run successfully?"
+  fail "yadm not found"
 fi
 
 # =============================================================================
-# Step 5: Shell (oh-my-zsh + plugins + theme)
+# Step 3: brew.sh (now available from dotfiles)
 # =============================================================================
 
-step "Step 5/11 — Shell setup"
+step "Step 3/12 — Homebrew packages"
+
+if [[ -f "$HOME/brew.sh" ]]; then
+  if ask_yn "Skip 'brew upgrade'? (faster, packages may be outdated)"; then
+    SKIP_UPGRADE=true bash "$HOME/brew.sh" && ok "brew.sh completed" || fail "brew.sh had errors"
+  else
+    bash "$HOME/brew.sh" && ok "brew.sh completed" || fail "brew.sh had errors"
+  fi
+else
+  fail "brew.sh not found — yadm clone may have failed"
+fi
+
+# =============================================================================
+# Step 4: Shell (oh-my-zsh + plugins + theme)
+# =============================================================================
+
+step "Step 4/12 — Shell setup"
 
 if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
   info "Installing oh-my-zsh..."
@@ -183,25 +143,21 @@ else
 fi
 
 # =============================================================================
-# Step 6: Git config
+# Step 5: Git config
 # =============================================================================
 
-step "Step 6/11 — Git config"
+step "Step 5/12 — Git config"
 
 current_name=$(git config --global user.name 2>/dev/null || true)
 current_email=$(git config --global user.email 2>/dev/null || true)
 
 if [[ -n "$current_name" && -n "$current_email" ]]; then
   ok "Git already configured as: ${current_name} <${current_email}>"
-  if ! ask_yn "Change git identity?"; then
-    git config --global pull.rebase true
-    RESULTS+=("${GREEN}✓${RESET} Git config kept (${current_name} <${current_email}>)")
-  else
+  if ask_yn "Change git identity?"; then
     ask "Git full name" git_name
     ask "Git email" git_email
     git config --global user.name "$git_name"
     git config --global user.email "$git_email"
-    git config --global pull.rebase true
     ok "Git config updated (${git_name} <${git_email}>)"
   fi
 else
@@ -209,15 +165,75 @@ else
   ask "Git email" git_email
   git config --global user.name "$git_name"
   git config --global user.email "$git_email"
-  git config --global pull.rebase true
   ok "Git config set (${git_name} <${git_email}>)"
+fi
+git config --global pull.rebase true
+
+# =============================================================================
+# Step 6: SSH key
+# =============================================================================
+
+step "Step 6/12 — SSH Key"
+
+SSH_KEY="$HOME/.ssh/id_ed25519"
+SSH_IS_NEW=false
+
+if [[ -f "$SSH_KEY" ]]; then
+  ok "SSH key already exists"
+else
+  info "Generating new ed25519 SSH key..."
+  ask "Enter your email for the SSH key" ssh_email
+  mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+  ssh-keygen -t ed25519 -C "$ssh_email" -f "$SSH_KEY" -N "" && ok "SSH key generated" || fail "SSH key generation failed"
+  SSH_IS_NEW=true
+fi
+
+eval "$(ssh-agent -s)" > /dev/null 2>&1
+ssh-add --apple-use-keychain "$SSH_KEY" 2>/dev/null || ssh-add "$SSH_KEY" 2>/dev/null || true
+
+if ! grep -q "ssh.github.com" "$HOME/.ssh/config" 2>/dev/null; then
+  mkdir -p "$HOME/.ssh"
+  cat >> "$HOME/.ssh/config" << 'EOF'
+Host github.com
+    Hostname ssh.github.com
+    Port 443
+    User git
+EOF
+  ok "SSH config written"
+fi
+
+if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+  ok "GitHub SSH already authorized"
+elif [[ "$SSH_IS_NEW" == true ]]; then
+  echo ""
+  echo -e "  ${BOLD}Your public key:${RESET}"
+  echo ""
+  cat "$SSH_KEY.pub"
+  echo ""
+  info "Add this key to GitHub → https://github.com/settings/ssh/new"
+  open "https://github.com/settings/ssh/new" 2>/dev/null || true
+  echo -en "  ${YELLOW}?${RESET} Press Enter once you've added the key to GitHub... "
+  read -r
+  ssh -T git@github.com 2>&1 | grep -q "successfully authenticated" && ok "GitHub SSH verified" || warn "Could not verify GitHub SSH"
+else
+  warn "GitHub SSH not verified — you may need to add your key manually"
+fi
+
+# Switch yadm remote from HTTPS to SSH
+if command -v yadm &>/dev/null; then
+  current_remote=$(yadm remote get-url origin 2>/dev/null || true)
+  if [[ "$current_remote" == "$DOTFILES_REPO_HTTPS" ]]; then
+    yadm remote set-url origin "$DOTFILES_REPO_SSH" && ok "yadm remote switched to SSH" || warn "Failed to switch yadm remote to SSH"
+  elif [[ "$current_remote" == "$DOTFILES_REPO_SSH" ]]; then
+    ok "yadm remote already using SSH"
+  fi
 fi
 
 # =============================================================================
 # Step 7: Auth (GitHub / GitLab)
 # =============================================================================
 
-step "Step 7/11 — Auth"
+step "Step 7/12 — Auth"
 
 echo -e "  Which platforms do you need to authenticate with?"
 echo -e "    ${BOLD}1)${RESET} GitHub only"
@@ -261,7 +277,7 @@ esac
 # Step 8: macOS defaults
 # =============================================================================
 
-step "Step 8/11 — macOS defaults"
+step "Step 8/12 — macOS defaults"
 
 info "Dock..."
 defaults write com.apple.dock autohide -bool true
@@ -293,22 +309,10 @@ killall Finder 2>/dev/null || true
 ok "macOS defaults applied"
 
 # =============================================================================
-# Step 9: npm globals
+# Step 9: mise runtimes
 # =============================================================================
 
-step "Step 9/11 — npm globals"
-
-if command -v npm &>/dev/null; then
-  npm install -g neovim && ok "neovim npm package installed" || fail "neovim npm install failed"
-else
-  fail "npm not found — skipping npm globals"
-fi
-
-# =============================================================================
-# Step 10: mise
-# =============================================================================
-
-step "Step 10/11 — mise runtimes"
+step "Step 9/12 — mise runtimes"
 
 if [[ -f "$HOME/mise.sh" ]]; then
   bash "$HOME/mise.sh" && ok "mise runtimes installed" || fail "mise.sh had errors"
@@ -317,16 +321,45 @@ else
 fi
 
 # =============================================================================
+# Step 10: npm globals
+# =============================================================================
+
+step "Step 10/12 — npm globals"
+
+if command -v npm &>/dev/null; then
+  npm install -g neovim && ok "neovim npm package installed" || fail "neovim npm install failed"
+else
+  warn "npm not found — skipping (will be available after mise installs node)"
+fi
+
+# =============================================================================
 # Step 11: Rectangle config
 # =============================================================================
 
-step "Step 11/11 — App config"
+step "Step 11/12 — App config"
 
 RECT_PLIST="$HOME/Library/Preferences/com.knollsoft.Rectangle.plist"
 if [[ -f "$RECT_PLIST" ]]; then
   defaults import com.knollsoft.Rectangle "$RECT_PLIST" && ok "Rectangle config imported" || fail "Rectangle config import failed"
 else
   warn "Rectangle plist not found — skipping"
+fi
+
+# =============================================================================
+# Step 12: .zshrc.local
+# =============================================================================
+
+step "Step 12/12 — Local config"
+
+if [[ -f "$HOME/.zshrc.local" ]]; then
+  ok ".zshrc.local already exists"
+else
+  if ask_yn "Create ~/.zshrc.local for machine-specific config (work tokens, aliases)?"; then
+    touch "$HOME/.zshrc.local"
+    ok ".zshrc.local created — edit it to add machine-specific config"
+  else
+    warn ".zshrc.local skipped"
+  fi
 fi
 
 # =============================================================================
@@ -346,4 +379,3 @@ echo -e "  ${GREEN}${BOLD}Bootstrap complete!${RESET}"
 echo -e "  Restart your terminal or run: ${BOLD}exec zsh${RESET}"
 echo -e "  Log saved to: ${BOLD}${LOG_FILE}${RESET}"
 echo ""
-echo "[$(date)] bootstrap.sh completed successfully"

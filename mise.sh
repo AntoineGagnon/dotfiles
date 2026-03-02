@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
-set -e
-
 LOG_DIR="${HOME}/.local/share/bootstrap"
 LOG_FILE="${LOG_DIR}/mise-$(date +%Y%m%d-%H%M%S).log"
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 echo "[$(date)] mise.sh started"
-trap 'echo "[$(date)] ERROR: mise.sh failed at line $LINENO (exit code $?)"' ERR
+trap 'echo "[$(date)] ERROR at line $LINENO (exit code $?)"' ERR
 
 if ! command -v mise &>/dev/null; then
   echo "[$(date)] ERROR: mise is not installed. Run brew.sh first."
