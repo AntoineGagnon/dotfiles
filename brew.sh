@@ -1,80 +1,173 @@
 #!/usr/bin/env bash
 
-# Install command-line tools using Homebrew.
+set -e
 
-# Make sure we’re using the latest Homebrew.
 brew update
-
-# Upgrade any already-installed formulae.
 brew upgrade
 
-# Save Homebrew’s installed location.
 BREW_PREFIX=$(brew --prefix)
 
-# Install GNU core utilities (those that come with macOS are outdated).
-# Don’t forget to add `$(brew --prefix coreutils)/libexec/gnubin` to `$PATH`.
-brew install coreutils
-ln -s "${BREW_PREFIX}/bin/gsha256sum" "${BREW_PREFIX}/bin/sha256sum"
+# Auto-update brew daily via LaunchAgent
+mkdir -p "${HOME}/Library/LaunchAgents"
+cat > "${HOME}/Library/LaunchAgents/homebrew.autoupdate.plist" << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>homebrew.autoupdate</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/homebrew/bin/brew</string>
+        <string>update</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>86400</integer>
+</dict>
+</plist>
+EOF
+launchctl load "${HOME}/Library/LaunchAgents/homebrew.autoupdate.plist" 2>/dev/null || true
 
-# Install some other useful utilities like `sponge`.
+# =============================================================================
+# Core Utilities
+# =============================================================================
+
+brew install coreutils
+ln -sf "${BREW_PREFIX}/bin/gsha256sum" "${BREW_PREFIX}/bin/sha256sum"
+
 brew install moreutils
-# Install GNU `find`, `locate`, `updatedb`, and `xargs`, `g`-prefixed.
 brew install findutils
-# Install GNU `sed`, overwriting the built-in `sed`.
-brew install gnu-sed --with-default-names
-# Install a modern version of Bash.
+brew install gnu-sed
+brew install grep
+brew install gmp
+brew install openssh
+brew install screen
+
+# =============================================================================
+# Shells & Completion
+# =============================================================================
+
 brew install bash
 brew install bash-completion2
+brew install zsh-syntax-highlighting
 
-# Switch to using brew-installed bash as default shell
-if ! fgrep -q "${BREW_PREFIX}/bin/bash" /etc/shells; then
+if ! grep -qF "${BREW_PREFIX}/bin/bash" /etc/shells; then
   echo "${BREW_PREFIX}/bin/bash" | sudo tee -a /etc/shells
   chsh -s "${BREW_PREFIX}/bin/bash"
 fi
 
-# Install `wget` with IRI support.
-brew install wget --with-iri
+# =============================================================================
+# Development Tools
+# =============================================================================
 
-# Install GnuPG to enable PGP-signing commits.
-brew install gnupg
+brew install mise
 
-# Install more recent versions of some macOS tools.
-brew install gmp
-brew install grep
-brew install neovim
-brew install openssh
-brew install php
-brew install screen
-brew install vim --with-override-system-vi
-
-# Install font tools.
-brew tap bramstein/webfonttools
-brew install sfnt2woff
-brew install sfnt2woff-zopfli
-brew install woff2
-
-# Install other useful binaries.
-brew install ack
-brew install --cask alt-tab
+# Git tools
 brew install gh
+brew install glab
 brew install git
 brew install git-lfs
-brew install gs
-brew install imagemagick --with-webp
-brew install lua
-brew install lynx
+brew install lazygit
+brew install yadm
+
+# Text editors
+brew install neovim
+brew install vim
+
+# Code formatters & linters
+brew install ktlint
+brew install swiftformat
+brew install prettier
+brew install markdownlint-cli2
+brew install ast-grep
+
+# =============================================================================
+# CLI Utilities
+# =============================================================================
+
+brew install ack
+brew install bat
+brew install eza
+brew install fd
+brew install fzf
+brew install jq
 brew install p7zip
 brew install pigz
 brew install pv
-brew install --cask raycast
 brew install rename
 brew install ripgrep
 brew install rlwrap
 brew install ssh-copy-id
+brew install thefuck
 brew install tree
-brew install yadm
 brew install vbindiff
+brew install wget
 brew install zopfli
+brew install glances
 
-# Remove outdated versions from the cellar.
+# =============================================================================
+# System & Monitoring
+# =============================================================================
+
+brew install fastfetch
+
+# =============================================================================
+# Multimedia
+# =============================================================================
+
+brew install ffmpeg
+brew install imagemagick
+brew install ghostscript
+brew install mermaid-cli
+
+# Font tools
+brew install sfnt2woff-zopfli
+brew install woff2
+
+# =============================================================================
+# Network & Web
+# =============================================================================
+
+brew install curl
+brew install lynx
+
+# =============================================================================
+# GPG & Security
+# =============================================================================
+
+brew install gnupg
+
+# =============================================================================
+# Cask Applications
+# =============================================================================
+
+# Terminals
+brew install --cask alacritty
+brew install --cask iterm2
+brew install --cask kitty
+
+# Window management
+brew install --cask alt-tab
+brew install --cask rectangle
+
+# Communication
+brew install --cask slack
+
+# Media
+brew install --cask spotify
+brew install --cask vlc
+
+# Development
+brew install --cask bruno
+
+# Tools
+brew install --cask boring-notch
+
+# Fonts
+brew install --cask font-jetbrains-mono
+
+# =============================================================================
+# Cleanup
+# =============================================================================
+
 brew cleanup
