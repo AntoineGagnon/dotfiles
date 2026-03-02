@@ -1,0 +1,46 @@
+# dotfiles
+
+My personal macOS dotfiles, managed with [yadm](https://yadm.io).
+
+## Fresh Mac Setup
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/AntoineGagnon/dotfiles/master/bootstrap.sh)
+```
+
+That's it. The script will guide you through everything.
+
+## What it sets up
+
+1. **Homebrew** — package manager
+2. **Dotfiles** — clones this repo via yadm
+3. **Homebrew packages** — all tools, apps and fonts from `brew.sh`
+4. **Shell** — oh-my-zsh, zsh-autosuggestions, you-should-use, powerlevel10k
+5. **Git** — global name/email, rebase on pull
+6. **SSH** — generates ed25519 key, adds to agent, switches yadm remote to SSH
+7. **Auth** — GitHub (`gh`) and/or GitLab (`glab`)
+8. **macOS defaults** — dock, finder, keyboard settings
+9. **mise** — Go, Python, Node, Java runtimes + golangci-lint
+10. **npm globals** — neovim provider
+11. **Rectangle** — imports window management config
+
+## Logs
+
+Every script writes a timestamped log to `~/.local/share/bootstrap/`.
+
+```bash
+ls ~/.local/share/bootstrap/
+cat ~/.local/share/bootstrap/brew-*.log
+```
+
+## Machine-specific config
+
+Anything that shouldn't be in this repo (work tokens, aliases, SSL certs) goes in `~/.zshrc.local` — sourced automatically by `.zshrc` but never tracked by yadm.
+
+## Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `bootstrap.sh` | Full setup from scratch |
+| `brew.sh` | Install/update all Homebrew packages |
+| `mise.sh` | Install global language runtimes |
