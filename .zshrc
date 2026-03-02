@@ -5,7 +5,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export PATH=$PATH:~/Library/Android/sdk/platform-tools:~/go/bin:~/Library/Android/sdk/emulator:~/Library/Android/sdk/:~/Library/Android/sdk/cmdline-tools/latest/bin
+export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools:$HOME/go/bin:$HOME/Library/Android/sdk/emulator:$HOME/Library/Android/sdk/:$HOME/Library/Android/sdk/cmdline-tools/latest/bin"
 
 export ANDROID_HOME="~/Library/Android/sdk"
 
@@ -60,13 +60,11 @@ fi
 # Tools
 eval "$(~/.local/bin/mise activate zsh)"
 
-[ -s "~/.bun/_bun" ] && source "~/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-export PATH="~/.opencode/bin:$PATH"
-export PATH="$PATH:$HOME/.rvm/bin"
-export PATH="$PATH:/Users/gagnoat/.lmstudio/bin"
+export PATH="$PATH:$HOME/.opencode/bin:$HOME/.rvm/bin:/Users/gagnoat/.lmstudio/bin"
 
 # Only run if a corporate cert is present
 [[ -f "$HOME/Documents/LQACENT50001P.pem" ]] && setup-certs
