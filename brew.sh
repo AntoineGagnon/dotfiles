@@ -61,6 +61,8 @@ fi
 # =============================================================================
 
 brew install mise
+brew install luarocks
+brew install acli
 
 # Git tools
 brew install gh
@@ -160,7 +162,8 @@ brew install --cask vlc
 # Development
 brew install --cask bruno
 
-# Tools
+# Launchers & tools
+brew install --cask raycast
 brew install --cask boring-notch
 
 # Fonts
