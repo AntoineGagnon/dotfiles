@@ -7,7 +7,7 @@ fi
 
 export PATH="$PATH:$HOME/Library/Android/sdk/platform-tools:$HOME/go/bin:$HOME/Library/Android/sdk/emulator:$HOME/Library/Android/sdk/:$HOME/Library/Android/sdk/cmdline-tools/latest/bin"
 
-export ANDROID_HOME="~/Library/Android/sdk"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
 
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -64,7 +64,7 @@ eval "$(~/.local/bin/mise activate zsh)"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-export PATH="$PATH:$HOME/.opencode/bin:$HOME/.rvm/bin:/Users/gagnoat/.lmstudio/bin"
+export PATH="$PATH:$HOME/.opencode/bin:$HOME/.rvm/bin:$HOME/.lmstudio/bin"
 
 # Only run if a corporate cert is present
 [[ -f "$HOME/Documents/LQACENT50001P.pem" ]] && setup-certs
