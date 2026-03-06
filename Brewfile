@@ -88,10 +88,8 @@ brew "lynx"
 # GPG & Security
 brew "gnupg"
 
-# Casks
-cask "alacritty"
+# Terminals
 cask "iterm2"
-cask "kitty"
 
 # Window management
 cask "alt-tab"
@@ -106,10 +104,17 @@ cask "vlc"
 
 # Development
 cask "bruno"
+cask "jetbrains-toolbox"
+brew "scrcpy"
+
+# Browsers
+cask "zen-browser"
 
 # Launchers & tools
 cask "raycast"
 cask "boring-notch"
+cask "caffeine"
+cask "1password"
 
 # Fonts
 cask "font-jetbrains-mono"

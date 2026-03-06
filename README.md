@@ -23,7 +23,7 @@ That's it. The script will guide you through everything.
 9. **macOS defaults** — dock, finder, keyboard, screenshots, trackpad
 10. **mise** — Go, Python, Node, Java runtimes + golangci-lint
 11. **npm globals** — neovim provider
-12. **Rectangle** — imports window management config
+12. **App configs** — Rectangle, rcmd
 
 ## Logs
 
@@ -33,6 +33,12 @@ Every script writes a timestamped log to `~/.local/share/bootstrap/`.
 ls ~/.local/share/bootstrap/
 cat ~/.local/share/bootstrap/brew-*.log
 ```
+
+## Mac App Store
+
+Some apps need manual install from the Mac App Store:
+
+- **rcmd** — the config will be restored automatically by bootstrap
 
 ## Machine-specific config
 

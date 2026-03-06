@@ -357,6 +357,13 @@ else
   warn "Rectangle plist not found — skipping"
 fi
 
+RCMD_PLIST="$HOME/Library/Containers/com.lowtechguys.rcmd/Data/Library/Preferences/com.lowtechguys.rcmd.plist"
+if [[ -f "$RCMD_PLIST" ]]; then
+  defaults import com.lowtechguys.rcmd "$RCMD_PLIST" && ok "rcmd config imported" || fail "rcmd config import failed"
+else
+  warn "rcmd plist not found — install rcmd from App Store and re-run"
+fi
+
 # =============================================================================
 # Step 12: .zshrc.local
 # =============================================================================
