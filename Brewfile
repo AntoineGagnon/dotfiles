@@ -27,6 +27,7 @@ brew "zsh-syntax-highlighting"
 # Development Tools
 brew "mise"
 brew "luarocks"
+brew "atlassian/acli/acli"
 
 # Git tools
 brew "gh"
@@ -106,6 +107,10 @@ cask "vlc"
 cask "bruno"
 cask "jetbrains-toolbox"
 brew "scrcpy"
+
+# Android
+brew "bundletool"
+brew "apktool"
 
 # Browsers
 cask "zen-browser"
