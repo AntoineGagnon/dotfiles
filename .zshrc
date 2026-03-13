@@ -65,6 +65,3 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 export PATH="$PATH:$HOME/.opencode/bin:$HOME/.rvm/bin:$HOME/.lmstudio/bin"
-
-# Only run if a corporate cert is present
-[[ -f "$HOME/Documents/LQACENT50001P.pem" ]] && setup-certs
