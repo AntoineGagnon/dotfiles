@@ -30,7 +30,6 @@ plugins=(
   sublime
   thefuck
   you-should-use
-  zsh-syntax-highlighting
   zsh-autosuggestions
 )
 
@@ -58,10 +57,28 @@ fi
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Tools
-eval "$(~/.local/bin/mise activate zsh)"
+eval "$(/opt/homebrew/bin/mise activate zsh)"
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-export PATH="$PATH:$HOME/.opencode/bin:$HOME/.rvm/bin:$HOME/.lmstudio/bin"
+export PATH="$PATH:$HOME/.opencode/bin:$HOME/.rvm/bin:$HOME/.lmstudio/bin:$HOME/.local/bin"
+
+### lyft_localdevtools_shell_rc start
+### DO NOT REMOVE: automatically installed as part of Lyft local dev tool setup
+if [[ -f "/opt/homebrew/Library/Taps/lyft/homebrew-localdevtools/scripts/shell_rc.sh" ]]; then
+    source "/opt/homebrew/Library/Taps/lyft/homebrew-localdevtools/scripts/shell_rc.sh"
+fi
+### lyft_localdevtools_shell_rc end
+
+### DO NOT REMOVE: automatically installed as part of Lyft local dev tool setup
+eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
+
+### lyft_rd_shell_rc start
+### DO NOT REMOVE: automatically installed as part of Rancher Desktop setup
+if [[ -f /Users/agagnon/.rd/shell_rc.sh ]]; then
+  source /Users/agagnon/.rd/shell_rc.sh
+fi
+### lyft_rd_shell_rc end

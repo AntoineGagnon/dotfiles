@@ -68,6 +68,7 @@ brew "vbindiff"
 brew "wget"
 brew "zopfli"
 brew "glances"
+brew "pygments"
 
 # System & Monitoring
 brew "fastfetch"
@@ -117,7 +118,6 @@ cask "zen-browser"
 
 # Launchers & tools
 cask "raycast"
-cask "boring-notch"
 cask "caffeine"
 cask "1password"
 
