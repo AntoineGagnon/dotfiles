@@ -1,0 +1,23 @@
+# Android SDK
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME:$ANDROID_HOME/cmdline-tools/latest/bin"
+
+# mise
+eval "$(/opt/homebrew/bin/mise activate zsh)"
+
+# aactivator (Python venv auto-activator)
+command -v aactivator &>/dev/null && eval "$(aactivator init)"
+
+# Lyft: local dev tools
+if [[ -f "/opt/homebrew/Library/Taps/lyft/homebrew-localdevtools/scripts/shell_rc.sh" ]]; then
+  source "/opt/homebrew/Library/Taps/lyft/homebrew-localdevtools/scripts/shell_rc.sh"
+fi
+
+# Lyft: fnm (managed by localdevtools)
+eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
+
+# Lyft: Rancher Desktop
+[[ -f "$HOME/.rd/shell_rc.sh" ]] && source "$HOME/.rd/shell_rc.sh"
+
+# zsh-syntax-highlighting (must be last)
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

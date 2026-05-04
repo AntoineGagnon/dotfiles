@@ -11,7 +11,7 @@ alias pj='f() { cd `pj-go $1` };f'
 alias statusCurl="curl -o /dev/null -s -w \"%{http_code}\""
 alias todo="nvim ~/todo/"
 alias sft="git diff --name-only --diff-filter=d | grep '\.swift$' | xargs swiftformat"
-[[ "$(uname -s)" == "Darwin" ]] && alias wn="afplay ~/Documents/white-noise.mp3"
+$IS_MACOS && alias wn="afplay ~/Documents/white-noise.mp3"
 
 # Android aliases
 alias adbPackages="adb shell pm list packages"

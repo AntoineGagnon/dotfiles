@@ -3,7 +3,7 @@
 # =============================================================================
 
 function setup-certs() {
-  [[ "$(uname -s)" == "Darwin" ]] || { echo "setup-certs: macOS only" >&2; return 1; }
+  $IS_MACOS || { echo "setup-certs: macOS only" >&2; return 1; }
   local cert_path="$HOME/.certs/all.pem"
   local cert_dir=$(dirname "${cert_path}")
   [[ -d "${cert_dir}" ]] || mkdir -p "${cert_dir}"
