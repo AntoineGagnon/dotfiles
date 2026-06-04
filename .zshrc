@@ -24,7 +24,6 @@ plugins=(
   git
   git-extras
   gradle
-  thefuck
   you-should-use
   zsh-autosuggestions
 )
