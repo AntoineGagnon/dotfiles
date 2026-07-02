@@ -17,3 +17,5 @@ $IS_MACOS && alias wn="afplay ~/Documents/white-noise.mp3"
 alias adbPackages="adb shell pm list packages"
 alias adbBack="adb shell input keyevent KEYCODE_BACK"
 alias adbSettings="adb shell am start -a android.settings.SETTINGS"
+
+alias tmuxsource='tmux source-file ~/.tmux.conf'

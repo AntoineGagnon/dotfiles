@@ -19,5 +19,8 @@ eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
 # Lyft: Rancher Desktop
 [[ -f "$HOME/.rd/shell_rc.sh" ]] && source "$HOME/.rd/shell_rc.sh"
 
+# worktree-cli
+command -v worktree &>/dev/null && eval "$(worktree shell)"
+
 # zsh-syntax-highlighting (must be last)
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
