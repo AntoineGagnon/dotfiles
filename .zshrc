@@ -20,7 +20,7 @@ zstyle ':omz:update' frequency 7
 
 plugins=(
   alias-finder
-  common-aliases
+  # common-aliases
   git
   git-extras
   gradle
@@ -53,3 +53,6 @@ if $IS_MACOS; then
 else
   source ~/.zshrc.linux
 fi
+
+# Rust env
+. "$HOME/.cargo/env"

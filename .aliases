@@ -9,9 +9,34 @@ alias podi="bundle exec pod install"
 alias cleanup="git checkout .  > /dev/null && git clean -df > /dev/null && echo 'Done !'"
 alias pj='f() { cd `pj-go $1` };f'
 alias statusCurl="curl -o /dev/null -s -w \"%{http_code}\""
-alias todo="nvim ~/todo/"
+todo() {
+  local file=~/Documents/Obsidian/Vault/Work/Todo.md
+  [[ -s "$file" && $(tail -c1 "$file") != "" ]] && echo >> "$file"
+  echo "- [ ] $*" >> "$file"
+}
 alias sft="git diff --name-only --diff-filter=d | grep '\.swift$' | xargs swiftformat"
 $IS_MACOS && alias wn="afplay ~/Documents/white-noise.mp3"
+alias grep='grep --color'
+alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
+
+alias t='tail -f'
+
+alias zshsource='source ~/.zshrc'
+alias agrep='alias G'
+
+
+# Command line head / tail shortcuts
+alias -g H='| head'
+alias -g T='| tail'
+alias -g G='| grep'
+alias -g L="| less"
+alias -g M="| most"
+alias -g LL="2>&1 | less"
+alias -g CA="2>&1 | cat -A"
+alias -g NE="2> /dev/null"
+alias -g NUL="> /dev/null 2>&1"
+alias -g P="2>&1| pygmentize -l pytb"
+
 
 # Android aliases
 alias adbPackages="adb shell pm list packages"
