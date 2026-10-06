@@ -1,0 +1,147 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+NETWORK="${TUNNEL_NETWORK:-arcane}"
+IMAGE="${TUNNEL_IMAGE:-cloudflare/cloudflared:2026.6.1}"
+
+die() { printf 'tunnel: %s\n' "$*" >&2; exit 1; }
+
+list_services() {
+  local ids
+  ids="$(docker ps -q --filter "network=${NETWORK}")" || die "cannot query Docker"
+  [[ -n "$ids" ]] || return 0
+  # shellcheck disable=SC2086
+  docker inspect $ids \
+    --format '{{.Name}}|{{range $p, $_ := .Config.ExposedPorts}}{{$p}} {{end}}' |
+    while IFS='|' read -r name ports; do
+      name="${name#/}"
+      for p in $ports; do
+        [[ "$p" == */tcp ]] || continue
+        printf 'http://%s:%s\n' "$name" "${p%/tcp}"
+      done
+    done
+}
+
+usage() {
+  cat >&2 <<EOF
+usage: tunnel [url]
+       tunnel (-l | --list)
+
+  url         open a quick tunnel to this origin
+  -l, --list  list services on the '${NETWORK}' Docker network
+
+Run without arguments for an interactive picker with substring search.
+EOF
+}
+
+_pick_raw() {
+  local -a all=("$@") matches=()
+  local query="" selected=0 key seq saved i q s
+  saved="$(stty -g)"
+  printf '\033[?25l' >&2
+  trap 'printf "\033[?25h" >&2; stty "$saved" 2>/dev/null' EXIT
+  stty -echo -icanon min 1 time 0 -isig
+
+  while :; do
+    matches=()
+    if [[ -z "$query" ]]; then
+      matches=("${all[@]}")
+    else
+      q="${query,,}"
+      for s in "${all[@]}"; do
+        [[ "${s,,}" == *"$q"* ]] && matches+=("$s")
+      done
+    fi
+    (( selected >= ${#matches[@]} )) && selected=$(( ${#matches[@]} - 1 ))
+    (( selected < 0 )) && selected=0
+
+    {
+      printf '\033[H\033[2J'
+      printf 'Select a service  (type to search, arrows move, enter run, esc quit)\n\n'
+      if (( ${#matches[@]} == 0 )); then
+        printf '  no match for "%s"\n' "$query"
+      else
+        for ((i = 0; i < ${#matches[@]}; i++)); do
+          if (( i == selected )); then
+            printf '  \033[7m%s\033[0m\n' "${matches[$i]}"
+          else
+            printf '  %s\n' "${matches[$i]}"
+          fi
+        done
+      fi
+      printf '\nsearch: %s\n' "$query"
+    } >&2
+
+    IFS= read -rsn1 key || break
+    case "$key" in
+      $'\e')
+        seq=""
+        IFS= read -rsn2 -t 0.01 seq || true
+        case "$seq" in
+          '[A') (( selected > 0 )) && selected=$(( selected - 1 )) ;;
+          '[B') (( selected < ${#matches[@]} - 1 )) && selected=$(( selected + 1 )) ;;
+          '') printf '\033[?25h' >&2; stty "$saved"; trap - EXIT; return 1 ;;
+        esac
+        ;;
+      $'\x03') printf '\033[?25h' >&2; stty "$saved"; trap - EXIT; return 1 ;;
+      $'\x7f' | $'\b') query="${query%?}"; selected=0 ;;
+      $'\n' | $'\r') break ;;
+      *) query+="$key"; selected=0 ;;
+    esac
+  done
+
+  printf '\033[?25h' >&2
+  stty "$saved"
+  trap - EXIT
+  (( ${#matches[@]} )) || return 1
+  printf '%s' "${matches[$selected]}"
+}
+
+pick() {
+  local -a services
+  mapfile -t services < <(list_services)
+  (( ${#services[@]} )) || die "no services found on network '${NETWORK}'"
+
+  if command -v gum >/dev/null 2>&1; then
+    gum filter --placeholder 'Select a service to tunnel' --height 15 "${services[@]}" || return 1
+  elif command -v fzf >/dev/null 2>&1; then
+    printf '%s\n' "${services[@]}" | fzf --prompt='tunnel> ' --height=40% --reverse || return 1
+  else
+    _pick_raw "${services[@]}"
+  fi
+}
+
+main() {
+  local url="" net
+  case "${1:-}" in
+    -l | --list)
+      list_services
+      exit 0
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    "")
+      if [[ -t 0 ]]; then
+        url="$(pick)" || { printf 'tunnel: cancelled\n' >&2; exit 1; }
+      else
+        usage
+        exit 1
+      fi
+      ;;
+    *) url="$1" ;;
+  esac
+
+  [[ -n "$url" ]] || exit 1
+
+  net="$NETWORK"
+  case "$url" in
+    *localhost* | *127.0.0.1*) net=host ;;
+  esac
+  exec docker run --rm --network "$net" "$IMAGE" tunnel --no-autoupdate --url "$url"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi
