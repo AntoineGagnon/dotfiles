@@ -3,8 +3,29 @@ set -euo pipefail
 
 NETWORK="${TUNNEL_NETWORK:-arcane}"
 IMAGE="${TUNNEL_IMAGE:-cloudflare/cloudflared:2026.6.1}"
+ALLOWED_EMAIL_KEY="${TUNNEL_ALLOWED_EMAIL_KEY:-tunnel.allowedEmail}"
 
 die() { printf 'tunnel: %s\n' "$*" >&2; exit 1; }
+
+git_email() {
+  git config --global --get user.email 2>/dev/null ||
+    git config --get user.email 2>/dev/null ||
+    true
+}
+
+allowed_emails() {
+  git config --get-all "$ALLOWED_EMAIL_KEY" 2>/dev/null || true
+}
+
+authorized() {
+  local email allowed
+  email="$(git_email)"
+  [[ -n "$email" ]] || return 1
+  while IFS= read -r allowed; do
+    [[ -n "$allowed" && "$email" == "$allowed" ]] && return 0
+  done < <(allowed_emails)
+  return 1
+}
 
 list_services() {
   local ids
@@ -113,13 +134,17 @@ pick() {
 
 main() {
   local url="" net
+
+  if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    usage
+    exit 0
+  fi
+
+  authorized || die "access restricted (current: $(git_email)); add allowed emails with: git config --global --add ${ALLOWED_EMAIL_KEY} <email>"
+
   case "${1:-}" in
     -l | --list)
       list_services
-      exit 0
-      ;;
-    -h | --help)
-      usage
       exit 0
       ;;
     "")
